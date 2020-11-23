@@ -6,23 +6,29 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import client.Client;
 import main.World;
 
 
 public class Affichage extends JPanel implements ActionListener {
 
-	private static final long serialVersionUID = -2977860217912678180L;
-	int maxFps = 60;
-	Timer timer = new Timer(1000/maxFps,this);
-	public World w = new World();
-	Bindings bind = new Bindings(w);
-	Mouse mouse = new Mouse(w);
-	public Object playerLock = new Object();
+	private 	static final long 	serialVersionUID = -2977860217912678180L;
+	private 	final int 			maxFps = 60;
+	private 	Timer 				timer;
+	protected 	World 				w;
+	private 	Client 				client;
+	
+//	public Object playerLock = new Object();
 
 	public Affichage() {
+		w = new World();
+		timer = new Timer(1000/maxFps,this);
 		w.x = -1;
 		
-		synchronized (playerLock) {
+		client = new Client(w);
+		new Thread(client).start();
+		
+//		synchronized (playerLock) {
 		w.leftPlayer.restart(); // Instant start
 		w.leftPlayer.restartStats();
 		w.leftPlayer.start = true;
@@ -31,7 +37,7 @@ public class Affichage extends JPanel implements ActionListener {
 		w.rightPlayer.restartStats();
 		w.rightPlayer.start = true;
 //		w.musique.play();
-		}
+//		}
 		timer.start();
 	}
 	
@@ -60,10 +66,10 @@ public class Affichage extends JPanel implements ActionListener {
 		
 //		synchronized (playerLock) {
 		
-		bind.processKeys();
+		w.bind.processKeys();
 		
 		// Makes a step for in the world
-		if (w.leftPlayer.start) {
+		if (w.leftPlayer.start) { // TODO A changer si l'on veut descendre à la même vitesse selon les fps
 			w.leftPlayer.step();
 		}
 		if (w.rightPlayer.start) {

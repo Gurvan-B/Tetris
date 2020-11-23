@@ -14,9 +14,9 @@ public class MyFrame extends JFrame{
 		this.setUndecorated(true);
 		this.add(affichage);
 		affichage.setFocusable(false);
-		this.addKeyListener(affichage.bind);
-		this.addMouseListener(affichage.mouse);
-		this.addMouseMotionListener(affichage.mouse);
+		this.addKeyListener(affichage.w.bind);
+		this.addMouseListener(affichage.w.mouse);
+		this.addMouseMotionListener(affichage.w.mouse);
 		this.setVisible(true);
 	}
 }

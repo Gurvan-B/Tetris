@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import main.Player;
 import main.World;
 
 public class Mouse implements MouseMotionListener, MouseListener {
@@ -22,6 +23,12 @@ public class Mouse implements MouseMotionListener, MouseListener {
 		this.mouseX = 0;
 		this.mouseY = 0;
 	}
+	
+	public void updatePlayerPointer(boolean isLeft, Player p) {
+		if (isLeft)	this.w.leftPlayer = p;
+		else this.w.rightPlayer = p;
+	}
+	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		synchronized (mouseLock) {

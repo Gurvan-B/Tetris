@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+
 import display.AudioFile;
 import display.Vector2;
 import shape.I_Shape;
@@ -56,7 +57,7 @@ public class Player implements Serializable{
 	 * and the opponent ship.
 	 */
 	
-	public Player(boolean isLeft) {
+	public Player(boolean isLeft, World world) {
 //		bind = new BindingsLeft(this);
 		time = System.currentTimeMillis();
 		this.isLeft = isLeft;
@@ -90,25 +91,6 @@ public class Player implements Serializable{
 		shadow = new Shadow_Shape(Color.lightGray, isLeft);
 		initShadow();
 		updateShadow();
-	}
-	
-	public void becomeCopy(Player toCopy) {	
-		time = toCopy.time;
-		score = toCopy.score; 
-		lineCount = toCopy.lineCount; 
-		level = toCopy.level; 
-		shape = toCopy.shape; 
-		nextShape = toCopy.nextShape; 
-		matrice = toCopy.matrice; 
-		rand = toCopy.rand; 
-		frameSinceGoDown = toCopy.frameSinceGoDown; 
-		goDownFaster = toCopy.goDownFaster; 
-		placedTiles = toCopy.placedTiles; 
-		inPause = toCopy.inPause;
-		shadow = toCopy.shadow;
-		start = toCopy.start;
-		justOver = toCopy.justOver;
-		isLeft = toCopy.isLeft;
 	}
 	
 	public void restart () { 
@@ -476,8 +458,10 @@ public class Player implements Serializable{
 			case 6: {
 				return new S_Shape(Color.green, isLeft);
 			}
+			default: {
+				return null;
+			}
 		}
-		return null;
 	}
 	
 	

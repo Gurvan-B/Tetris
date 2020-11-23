@@ -19,7 +19,7 @@ public class AudioFile {
 	
 	public AudioFile (String fileName, boolean loop) {
 		
-		String url = "C:\\Users\\GURVAN\\eclipse-workspace";
+		String url = "C:\\Users\\GURVAN\\git\\Tetris";
 //		System.out.println(url + "ressources\\" + fileName + ".wav");
 		
 		

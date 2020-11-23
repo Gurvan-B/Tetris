@@ -10,15 +10,17 @@ import main.World;
 
 public class Bindings implements KeyListener {
 
-	public Player	leftPl;
-	public Player 	rightPl;
+//	public Player	leftPl;
+//	public Player 	rightPl;
 	public Set<Integer> keysPressed;
     private Object keyLock = new Object();
     private Key[] keys;
+    public World w;
 	
 	public Bindings(World w) {
-		this.leftPl = w.leftPlayer;
-		this.rightPl = w.rightPlayer;
+//		this.leftPl = w.leftPlayer;
+//		this.rightPl = w.rightPlayer;
+		this.w=w;
 		this.keysPressed = new TreeSet<Integer>();
 		this.keys = new Key[256];
 		initKeys();
@@ -28,80 +30,80 @@ public class Bindings implements KeyListener {
 		
 			
 			// Left player
-		if (leftPl.start && !leftPl.inPause) {
+		if (w.leftPlayer.start && !w.leftPlayer.inPause) {
 			
 			if( keys[KeyEvent.VK_Q].mustProcess() ) {
-				leftPl.shape.goLeft();
-				leftPl.processHit(1);
+				w.leftPlayer.shape.goLeft();
+				w.leftPlayer.processHit(1);
 			}
 			
 			
 			if( keys[KeyEvent.VK_D].mustProcess() ) {
-				leftPl.shape.goRight();
-				leftPl.processHit(1);
+				w.leftPlayer.shape.goRight();
+				w.leftPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_S].mustProcess() ) {
-				leftPl.shape.rotateLeft(true);
-				leftPl.processHit(1);
+				w.leftPlayer.shape.rotateLeft(true);
+				w.leftPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_Z].mustProcess() ) {
-				leftPl.shape.rotateRight(true);
-				leftPl.processHit(1);
+				w.leftPlayer.shape.rotateRight(true);
+				w.leftPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_SPACE].mustProcess() ) {
-				leftPl.goMaxDown();
+				w.leftPlayer.goMaxDown();
 			}
 			
 			if( keys[KeyEvent.VK_SHIFT].mustProcess() ) {
-				leftPl.goDownFaster = true;
+				w.leftPlayer.goDownFaster = true;
 			} else {
-				leftPl.goDownFaster = false;
+				w.leftPlayer.goDownFaster = false;
 			}
 			
 		}
 		
 			// Right player
-		if (rightPl.start && !rightPl.inPause) {	
+		if (w.rightPlayer.start && !w.rightPlayer.inPause) {	
 			if( keys[KeyEvent.VK_LEFT].mustProcess() ) {
-				rightPl.shape.goLeft();
-				rightPl.processHit(1);
+				w.rightPlayer.shape.goLeft();
+				w.rightPlayer.processHit(1);
 			}
 			
 			
 			if( keys[KeyEvent.VK_RIGHT].mustProcess() ) {
-				rightPl.shape.goRight();
-				rightPl.processHit(1);
+				w.rightPlayer.shape.goRight();
+				w.rightPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_DOWN].mustProcess() ) {
-				rightPl.shape.rotateLeft(true);
-				rightPl.processHit(1);
+				w.rightPlayer.shape.rotateLeft(true);
+				w.rightPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_UP].mustProcess() ) {
-				rightPl.shape.rotateRight(true);
-				rightPl.processHit(1);
+				w.rightPlayer.shape.rotateRight(true);
+				w.rightPlayer.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_ENTER].mustProcess() ) {
-				rightPl.goMaxDown();
+				w.rightPlayer.goMaxDown();
 			}
 			
 			if( keys[KeyEvent.VK_INSERT].mustProcess() ) {
-				rightPl.goDownFaster = true;
+				w.rightPlayer.goDownFaster = true;
 			} else {
-				rightPl.goDownFaster = false;
+				w.rightPlayer.goDownFaster = false;
 			}
 			
 		}
 			// Pause and Escape
 			
 			if( keys[KeyEvent.VK_P].mustProcess() ) {
-				leftPl.inPause = !leftPl.inPause;
-				rightPl.inPause = !rightPl.inPause;
+				w.leftPlayer.inPause = !w.leftPlayer.inPause;
+				w.rightPlayer.inPause = !w.rightPlayer.inPause;
 			}
 
 			if( keys[KeyEvent.VK_ESCAPE].mustProcess() ) {

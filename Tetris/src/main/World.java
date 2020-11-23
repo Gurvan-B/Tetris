@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 import display.AudioFile;
 //import display.Button;
 import display.Vector2;
+import graphiques.Bindings;
+import graphiques.Mouse;
 import shape.I_Shape;
 import shape.J_Shape;
 import shape.L_Shape;
@@ -34,23 +36,27 @@ public class World {
 	public int			x;
 	private BufferedImage logo;
 	private BufferedImage fond;
+	public Bindings bind;
+	public Mouse mouse;
 	
 	public World() {
-		leftPlayer = new Player(true);
-		rightPlayer = new Player(false);
+		leftPlayer = new Player(true,this);
+		rightPlayer = new Player(false,this);
 		musique = new AudioFile("musique",true);
 		frameSinceYouWin = 0;
 		x= -1; // hors de l'écran de base
 		
+		bind = new Bindings(this);
+		mouse = new Mouse(this);
 		try {	
-			fond = ImageIO.read(new File("C:\\Users\\GURVAN\\eclipse-workspace\\Tetris\\ressources\\fond.png"));
+			fond = ImageIO.read(new File("C:\\Users\\GURVAN\\git\\Tetris\\Tetris\\ressources\\fond.png"));
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		try {	
-			logo = ImageIO.read(new File("C:\\Users\\GURVAN\\eclipse-workspace\\Tetris\\ressources\\logo.png"));
+			logo = ImageIO.read(new File("C:\\Users\\GURVAN\\git\\Tetris\\Tetris\\ressources\\logo.png"));
 			
 		} catch (IOException e) {
 			e.printStackTrace();
