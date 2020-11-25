@@ -3,9 +3,8 @@ package graphiques;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
-import main.Player;
 import main.World;
+import packets.BooleanPacket;
 
 public class Mouse implements MouseMotionListener, MouseListener {
 	
@@ -22,11 +21,6 @@ public class Mouse implements MouseMotionListener, MouseListener {
 		this.w = w;
 		this.mouseX = 0;
 		this.mouseY = 0;
-	}
-	
-	public void updatePlayerPointer(boolean isLeft, Player p) {
-		if (isLeft)	this.w.leftPlayer = p;
-		else this.w.rightPlayer = p;
 	}
 	
 	@Override
@@ -68,17 +62,22 @@ public class Mouse implements MouseMotionListener, MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		synchronized (mouseLock) {
-			if (centerX-sizeX/2 < mouseX && mouseX < centerX+sizeX/2 && mouseY < centerY+sizeY/2 && centerY-sizeY/2 < mouseY && w.gameIsOver()) {
-				w.leftPlayer.restart();
-				w.leftPlayer.restartStats();
-				w.leftPlayer.start = true;
+			if (!w.playing && !w.drawChrono && centerX-sizeX/2 < mouseX && mouseX < centerX+sizeX/2 && mouseY < centerY+sizeY/2 && centerY-sizeY/2 < mouseY) {
+//				w.leftPlayer.restart();
+//				w.leftPlayer.restartStats();
+//				w.leftPlayer.start = true;
+//				
+//				w.rightPlayer.restart();
+//				w.rightPlayer.restartStats();
+//				w.rightPlayer.start = true;
+//				w.x= -1;
+//				
+//				w.musique.play();
 				
-				w.rightPlayer.restart();
-				w.rightPlayer.restartStats();
-				w.rightPlayer.start = true;
-				w.x= -1;
+				w.playerIsReady = !w.playerIsReady;
+				w.client.sendToOther(new BooleanPacket(w.playerIsReady, BooleanPacket.isReadyBool ));
+//				w.processStartBothReady();
 				
-				w.musique.play();
 			}
 		}
 	}

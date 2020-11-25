@@ -2,6 +2,7 @@ package shape;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 //import display.StdDraw;
@@ -23,6 +24,13 @@ public class Tile implements Serializable{
 	protected	Vector2<Integer>	lastPos;
 	int					size;
 	private		int					borderSize;
+//	private transient BufferedImage purple = loadImage("textures/purple");
+//	private transient BufferedImage cyan = loadImage("textures/cyan");
+//	private transient BufferedImage blue = loadImage("textures/blue");
+//	private transient BufferedImage orange = loadImage("textures/orange");
+//	private transient BufferedImage yellow = loadImage("textures/yellow");
+//	private transient BufferedImage red = loadImage("textures/red");
+//	private transient BufferedImage green = loadImage("textures/green");
 	
 	/**
 	 * Creates a tile for the player of the opponent
@@ -38,6 +46,7 @@ public class Tile implements Serializable{
 		this.color = color;
 		this.size = 54; // une tile est un carré de pixels de 54x54
 		this.borderSize = 1; // en Pixels
+		
 	}
 	
 	
@@ -73,27 +82,93 @@ public class Tile implements Serializable{
 //		StdDraw.setPenColor(StdDraw.BLACK);
 //	}
 	
+//	BufferedImage loadImage(String fn) {	
+//
+//		InputStream inputStr = this.getClass().getResourceAsStream("/" + fn + ".png");
+//			
+//		BufferedImage image = null;
+//		
+//		try {
+//			image = ImageIO.read(inputStr);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return image;
+//	}
+	
 	@Override
 	public String toString() {
 		return "X: " + tilePos.getX() + "Y: " + tilePos.getY();
 		
 	}
 	
-	public void Nouveaudraw(boolean left, Graphics g) {
+//	public void draw(boolean left, Graphics g) {
+//		if (tilePos == null)
+//			return;
+//		
+//		int x = size * (tilePos.getX()-1);
+//		int y = size * (tilePos.getY()-2);
+//		if (!left) {
+//			x+=size*10 + 840; // 840 correspond à l'écran central pour l'instant
+//		}
+//		
+//		g.setColor(Color.black);
+//		g.fillRect(x-borderSize, y-borderSize, size+borderSize*2, size+borderSize*2);
+//		
+//		g.setColor(color);
+//		g.fillRect(x+borderSize, y+borderSize, size-borderSize*2, size-borderSize*2);
+//	}
+	
+	public void draw(boolean left, Graphics g, TextureLoader tl) {
 		if (tilePos == null)
 			return;
 		
 		int x = size * (tilePos.getX()-1);
-		int y = size * (tilePos.getY()-1);
+		int y = size * (tilePos.getY()-2);
 		if (!left) {
 			x+=size*10 + 840; // 840 correspond à l'écran central pour l'instant
 		}
+		BufferedImage texture;
+		switch (color.hashCode()) {
+			case -20561:{ // hashcode for pink
+				texture = tl.purple;
+				break;
+			}
+			case -16711681:{
+				texture = tl.cyan;
+				break;
+			}
+			case -16776961:{
+				texture = tl.blue;
+				break;
+			}
+			case -14336:{
+				texture = tl.orange;
+				break;
+			}
+			case -256:{
+				texture = tl.yellow;
+				break;
+			}
+			case -65536:{
+				texture = tl.red;
+				break;
+			}
+			case -16711936:{
+				texture = tl.green;
+				break;
+			}
+			default: {
+				g.setColor(Color.black);
+				g.fillRect(x-borderSize, y-borderSize, size+borderSize*2, size+borderSize*2);
+				
+				g.setColor(color);
+				g.fillRect(x+borderSize, y+borderSize, size-borderSize*2, size-borderSize*2);
+				return;
+			}
+		}
+		g.drawImage(texture,x,y,size,size,null);
 		
-		g.setColor(Color.black);
-		g.fillRect(x-borderSize, y-borderSize, size+borderSize*2, size+borderSize*2);
-		
-		g.setColor(color);
-		g.fillRect(x+borderSize, y+borderSize, size-borderSize*2, size-borderSize*2);
 	}
 	
 	

@@ -13,31 +13,32 @@ import main.World;
 public class Affichage extends JPanel implements ActionListener {
 
 	private 	static final long 	serialVersionUID = -2977860217912678180L;
-	private 	final int 			maxFps = 60;
+	private 	final int 			maxFps = 600;
 	private 	Timer 				timer;
 	protected 	World 				w;
 	private 	Client 				client;
+//	private		boolean				sendPlayer;
+	private		int					refreshLastSecond;
+	private		long				timeLastSecond;
+	private		int					lastFPS;
 	
 //	public Object playerLock = new Object();
 
 	public Affichage() {
 		w = new World();
 		timer = new Timer(1000/maxFps,this);
-		w.x = -1;
 		
 		client = new Client(w);
-		new Thread(client).start();
+		w.setClient(client);
 		
-//		synchronized (playerLock) {
-		w.leftPlayer.restart(); // Instant start
-		w.leftPlayer.restartStats();
-		w.leftPlayer.start = true;
-		
-		w.rightPlayer.restart();
-		w.rightPlayer.restartStats();
-		w.rightPlayer.start = true;
-//		w.musique.play();
-//		}
+//		w.reset();
+//		w.playing=true;
+//		w.playingLeft=true;
+//		w.bind.updatePlayer();
+//		w.processStartBothReady();
+		refreshLastSecond = 0;
+		lastFPS = 0;
+		timeLastSecond = System.currentTimeMillis();
 		timer.start();
 	}
 	
@@ -46,7 +47,7 @@ public class Affichage extends JPanel implements ActionListener {
 		super.paintComponent(g);
 		
 //		synchronized (playerLock) {
-			w.drawScreen(g);
+		w.drawScreen(g,lastFPS);
 //		}
 		
 	}
@@ -63,21 +64,30 @@ public class Affichage extends JPanel implements ActionListener {
 		
 //		lastTime = (int) System.currentTimeMillis();
 //		}
-		
 //		synchronized (playerLock) {
 		
+		
+//		if (w.bothReady()) w.startPlaying();
+		
+		
+		
+		
+		
+		updateFPS();
 		w.bind.processKeys();
 		
 		// Makes a step for in the world
-		if (w.leftPlayer.start) { // TODO A changer si l'on veut descendre à la même vitesse selon les fps
+		if (w.leftPlayer.start && w.playingLeft) { // TODO A changer si l'on veut descendre à la même vitesse selon les fps
 			w.leftPlayer.step();
 		}
-		if (w.rightPlayer.start) {
+		if (w.rightPlayer.start && !w.playingLeft) {
 			w.rightPlayer.step();
 		}
 		
 		// Actions when both players just lost
-		if (w.leftPlayer.justOver && w.rightPlayer.justOver) {
+//		if (w.getPlayingPlayer().justOver) System.out.println("PlayingjustOver");
+//		if (client.opponentJustOver) System.out.println("clientJustOver");
+		if (!w.getPlayingPlayer().start && client.opponentJustOver) {
 			w.gameOverActions();
 		}
 //		}
@@ -88,6 +98,17 @@ public class Affichage extends JPanel implements ActionListener {
 		
 		this.repaint();
 		
+	}
+	
+	public void updateFPS() {
+		if (timeLastSecond+1000 < System.currentTimeMillis()) {
+			timeLastSecond = System.currentTimeMillis();
+//			client.displayMessageLog("FPS: " + refreshLastSecond,true);
+			lastFPS = refreshLastSecond;
+			refreshLastSecond = 0;
+		} else {
+			refreshLastSecond++;
+		}
 	}
 	
 

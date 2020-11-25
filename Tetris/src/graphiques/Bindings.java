@@ -16,6 +16,7 @@ public class Bindings implements KeyListener {
     private Object keyLock = new Object();
     private Key[] keys;
     public World w;
+    private Player p;
 	
 	public Bindings(World w) {
 //		this.leftPl = w.leftPlayer;
@@ -30,84 +31,52 @@ public class Bindings implements KeyListener {
 		
 			
 			// Left player
-		if (w.leftPlayer.start && !w.leftPlayer.inPause) {
+		if (p.start && !p.inPause) {
 			
 			if( keys[KeyEvent.VK_Q].mustProcess() ) {
-				w.leftPlayer.shape.goLeft();
-				w.leftPlayer.processHit(1);
+				p.shape.goLeft();
+				p.processHit(1);
 			}
 			
 			
 			if( keys[KeyEvent.VK_D].mustProcess() ) {
-				w.leftPlayer.shape.goRight();
-				w.leftPlayer.processHit(1);
+				p.shape.goRight();
+				p.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_S].mustProcess() ) {
-				w.leftPlayer.shape.rotateLeft(true);
-				w.leftPlayer.processHit(1);
+				p.shape.rotateLeft(true);
+				p.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_Z].mustProcess() ) {
-				w.leftPlayer.shape.rotateRight(true);
-				w.leftPlayer.processHit(1);
+				p.shape.rotateRight(true);
+				p.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_SPACE].mustProcess() ) {
-				w.leftPlayer.goMaxDown();
+				p.goMaxDown();
 			}
 			
 			if( keys[KeyEvent.VK_SHIFT].mustProcess() ) {
-				w.leftPlayer.goDownFaster = true;
+				p.goDownFaster = true;
 			} else {
-				w.leftPlayer.goDownFaster = false;
+				p.goDownFaster = false;
 			}
 			
 		}
 		
-			// Right player
-		if (w.rightPlayer.start && !w.rightPlayer.inPause) {	
-			if( keys[KeyEvent.VK_LEFT].mustProcess() ) {
-				w.rightPlayer.shape.goLeft();
-				w.rightPlayer.processHit(1);
-			}
-			
-			
-			if( keys[KeyEvent.VK_RIGHT].mustProcess() ) {
-				w.rightPlayer.shape.goRight();
-				w.rightPlayer.processHit(1);
-			}
-			
-			if( keys[KeyEvent.VK_DOWN].mustProcess() ) {
-				w.rightPlayer.shape.rotateLeft(true);
-				w.rightPlayer.processHit(1);
-			}
-			
-			if( keys[KeyEvent.VK_UP].mustProcess() ) {
-				w.rightPlayer.shape.rotateRight(true);
-				w.rightPlayer.processHit(1);
-			}
-			
-			if( keys[KeyEvent.VK_ENTER].mustProcess() ) {
-				w.rightPlayer.goMaxDown();
-			}
-			
-			if( keys[KeyEvent.VK_INSERT].mustProcess() ) {
-				w.rightPlayer.goDownFaster = true;
-			} else {
-				w.rightPlayer.goDownFaster = false;
-			}
-			
-		}
 			// Pause and Escape
 			
 			if( keys[KeyEvent.VK_P].mustProcess() ) {
-				w.leftPlayer.inPause = !w.leftPlayer.inPause;
-				w.rightPlayer.inPause = !w.rightPlayer.inPause;
+				p.inPause = !p.inPause;
 			}
 
 			if( keys[KeyEvent.VK_ESCAPE].mustProcess() ) {
 				System.exit(0);
+			}
+			if( keys[KeyEvent.VK_F].mustProcess() ) {
+				w.showFps = ! w.showFps;
 			}
 		}
 
@@ -115,22 +84,23 @@ public class Bindings implements KeyListener {
 	
 		public void initKeys() {
 			
-			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 6);
-			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 6);
+			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 120);
+			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 120);
 			keys[KeyEvent.VK_SHIFT] = new Key(KeyEvent.VK_SHIFT, 0);
-			keys[KeyEvent.VK_S] = new Key(KeyEvent.VK_S, 10);
-			keys[KeyEvent.VK_Z] = new Key(KeyEvent.VK_Z, 10);
-			keys[KeyEvent.VK_SPACE] = new Key(KeyEvent.VK_SPACE, 16);
+			keys[KeyEvent.VK_S] = new Key(KeyEvent.VK_S, 170);
+			keys[KeyEvent.VK_Z] = new Key(KeyEvent.VK_Z, 170);
+			keys[KeyEvent.VK_SPACE] = new Key(KeyEvent.VK_SPACE, 300);
 			
-			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 6);
-			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 6);
-			keys[KeyEvent.VK_INSERT] = new Key(KeyEvent.VK_INSERT, 0);
-			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 10);
-			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 10);
-			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 16);
+//			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 6);
+//			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 6);
+//			keys[KeyEvent.VK_INSERT] = new Key(KeyEvent.VK_INSERT, 0);
+//			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 10);
+//			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 10);
+//			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 16);
 			
-			keys[KeyEvent.VK_P] = new Key(KeyEvent.VK_P, 20);
-			keys[KeyEvent.VK_ESCAPE] = new Key(KeyEvent.VK_ESCAPE, 6);
+			keys[KeyEvent.VK_P] = new Key(KeyEvent.VK_P, 500);
+			keys[KeyEvent.VK_ESCAPE] = new Key(KeyEvent.VK_ESCAPE,0);
+			keys[KeyEvent.VK_F] = new Key(KeyEvent.VK_F,300);
 		}
 		
 	
@@ -159,12 +129,13 @@ public class Bindings implements KeyListener {
 	private class Key {
 
 		private int keyEvent;
-		private int frameSincePerformed;
-		private int frameUntilPerform;
+		private long timeSincePerformed;
+		private long millisecUntilPerform;
 		
-		public Key(int keyEvent, int frameUntilPerform ) {
+		public Key(int keyEvent, int millisecUntilPerform ) {
 			this.keyEvent = keyEvent;
-			this.frameUntilPerform = frameUntilPerform;
+			this.timeSincePerformed = 0;
+			this.millisecUntilPerform = millisecUntilPerform;
 		}
 		
 		public boolean isPressed() {
@@ -174,14 +145,20 @@ public class Bindings implements KeyListener {
 		}
 		
 		public boolean mustProcess() {
-			if ( this.isPressed() && (frameSincePerformed >= frameUntilPerform) ) {
-				frameSincePerformed = 0;
+			if ( this.isPressed() && (timeSincePerformed+millisecUntilPerform <= System.currentTimeMillis()) ) {
+				timeSincePerformed = System.currentTimeMillis();
 				return true;
 			} else {
-				frameSincePerformed ++;
 				return false;
 			}
 		}
+	}
+
+
+	public void updatePlayer() {
+		if(w.playingLeft) this.p = w.leftPlayer;
+		else this.p = w.rightPlayer;
+		
 	}
 
 

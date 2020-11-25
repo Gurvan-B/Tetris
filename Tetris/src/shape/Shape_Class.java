@@ -71,9 +71,9 @@ public abstract class Shape_Class implements Serializable {
 //		 ((ArrayList<Tile>) layout).get(index).updatePosition( new Vector2<Double>(t.getPosition().getX(),t.getPosition().getY()));
 //	}
 	
-	public void draw(Graphics g) {
+	public void draw(Graphics g, TextureLoader tl) {
 		for ( Tile t : layout) {
-			t.Nouveaudraw(isLeft,g);
+			t.draw(isLeft,g,tl);
 		}
 	}
 	
@@ -139,7 +139,7 @@ public abstract class Shape_Class implements Serializable {
 				t.updatePosition( new Vector2<Integer>(xCentre + ( t.getPosition().getY() - yCentre ) , yCentre + (xCentre - t.getPosition().getX()) ));
 			}
 			if (playSound) {
-				AudioFile rotate = new AudioFile("rotate",false);
+				AudioFile rotate = new AudioFile("sound_effects/rotate",false);
 				rotate.play();
 			}
 		}
@@ -153,7 +153,7 @@ public abstract class Shape_Class implements Serializable {
 				t.updatePosition( new Vector2<Integer>(xCentre + ( yCentre - t.getPosition().getY() ) , yCentre + ( t.getPosition().getX() - xCentre ) ));
 			}
 			if (playSound) {
-				AudioFile rotate = new AudioFile("rotate",false);
+				AudioFile rotate = new AudioFile("sound_effects/rotate",false);
 				rotate.play();
 			}
 		}
@@ -189,7 +189,7 @@ public abstract class Shape_Class implements Serializable {
 			Tile t = ((ArrayList<Tile>) layout).get(i);
 			t.updatePosition( new Vector2<Integer>(t.getPosition().getX()+1,t.getPosition().getY())  );
 		}
-		AudioFile move = new AudioFile("move",false);
+		AudioFile move = new AudioFile("sound_effects/move",false);
 		move.play();
 	}
 	
@@ -199,7 +199,7 @@ public abstract class Shape_Class implements Serializable {
 			Tile t = ((ArrayList<Tile>) layout).get(i);
 			t.updatePosition( new Vector2<Integer>(t.getPosition().getX()-1,t.getPosition().getY())  );
 		}
-		AudioFile move = new AudioFile("move",false);
+		AudioFile move = new AudioFile("sound_effects/move",false);
 		move.play();
 	}
 	

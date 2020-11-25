@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-import main.Player;
+import javax.swing.JOptionPane;
 
+import main.Player;
+import packets.BooleanPacket;
+import packets.Packet;
+import packets.PlayerPacket;
 
 
 public class ServerConnection implements Runnable{
@@ -31,25 +35,53 @@ public class ServerConnection implements Runnable{
 		try {
 			running = true;
 			while (running) {
-				Object response = in.readObject();
-				
-			if (response instanceof Boolean) {
-				client.setIsleft( (boolean) response );
-				client.setIsLeftDefined(true);
-				
-				System.out.println("[CLIENT] Set isLeft to " + client.getisLeft());
-//				System.out.println("[CLIENT] Set isLeftDefined to " + client.getisLeftDefined());
-			}
-			else if (response instanceof Player) {
-				System.out.println("[CLIENT] Recu :" + response);
-				client.updatePlayer( (Player)response); // Updates the other side player from client
-			}
-			else System.out.println("Objet non identifie");
+				Object packet = in.readObject();
+				if (packet instanceof Packet) {
+					client.displayMessageLog("Recu: " + packet,false);
+					if (((Packet)packet).getType()==BooleanPacket.isLeftBool) {
+						boolean request = ((BooleanPacket)packet).getBoolean();
+						client.setIsleft( (boolean) request );
+						client.setIsLeftDefined(true);
+						synchronized(client.lockDefineLeft) {
+							client.lockDefineLeft.notifyAll();	// TODO notifyAll ou notify
+						}
+						client.displayMessageLog("Set isLeft to " + client.getisLeft(),true);
+					}
+					
+//					else if (((Packet)packet).getType()==BooleanPacket.isReadyBool) {
+//						@SuppressWarnings("unused") // TODO
+//						boolean request = ((BooleanPacket)packet).getBoolean();
+//						client.w.opponentIsReady=request;
+//						client.w.processStartBothReady();
+//					}
+					
+					else if (((Packet)packet).getType()==BooleanPacket.beginBool) {
+						@SuppressWarnings("unused") // TODO
+						boolean request = ((BooleanPacket)packet).getBoolean();
+						client.w.drawChrono = request;
+						if (client.w.drawChrono) {
+							client.w.reset();
+							client.startSending();
+						}
+					}
+					
+					else if (packet instanceof PlayerPacket) {
+						Player request = ((PlayerPacket)packet).getPlayer();
+						if (request.over) {
+							client.opponentJustOver = true;
+							client.displayMessageLog("Opponent game over", false);
+						}
+						client.updateOtherPlayer(request);
+					}
+					else client.displayMessageLog("Packet non identifie: " + packet,true);
+					}
+				else client.displayMessageLog("Objet non identifie: " + packet,true);
 			}
 			
 		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace(); // A retirer plus tard
-//			System.out.println("Connection lost"); TODO
+//			e.printStackTrace(); // A retirer plus tard
+			client.displayMessageLog("Connection lost",true);
+			JOptionPane.showMessageDialog(null, "Connection lost","Connection error",JOptionPane.WARNING_MESSAGE);
 		}
 		finally {
 			try {

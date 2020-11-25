@@ -9,16 +9,7 @@ import java.util.Random;
 
 import display.AudioFile;
 import display.Vector2;
-import shape.I_Shape;
-import shape.J_Shape;
-import shape.L_Shape;
-import shape.O_Shape;
-import shape.S_Shape;
-import shape.Shadow_Shape;
-import shape.T_Shape;
-import shape.Shape_Class;
-import shape.Tile;
-import shape.Z_Shape;
+import shape.*;
 
 /**
  * The world contains the ships and draws them to screen.
@@ -31,7 +22,7 @@ public class Player implements Serializable{
 	private static final long serialVersionUID = -2732929164670973602L;
 	
 	//	private Bindings 	bind;					// The bindings of the game.
-	protected long 				time;					// The current time 
+//	protected long 				time;					// The current time 
 	protected int				score;
 	protected int				lineCount;
 	protected int				level;
@@ -39,7 +30,7 @@ public class Player implements Serializable{
 	int							nextShape;				// The next shape of the player
 	protected int[][]			matrice;
 	protected Random 			rand;					// Instance of Random to generate random integers.
-	protected int				frameSinceGoDown;
+	protected long				millisecSinceGoDown;
 	public boolean				goDownFaster;
 //	public	boolean				gameIsOver;
 	public	Collection<Tile> 	placedTiles;
@@ -49,7 +40,7 @@ public class Player implements Serializable{
 	public	boolean				start;
 //	public 	StartButton			startButton;
 //	public	AudioFile 			musique;
-	public	boolean				justOver;
+	public	boolean				over;
 	public	boolean				isLeft;
 	
 	/**
@@ -57,12 +48,13 @@ public class Player implements Serializable{
 	 * and the opponent ship.
 	 */
 	
-	public Player(boolean isLeft, World world) {
+	public Player(boolean isLeft) {
 //		bind = new BindingsLeft(this);
-		time = System.currentTimeMillis();
+//		time = System.currentTimeMillis();
+		over = false;
 		this.isLeft = isLeft;
 		rand = new Random();
-		frameSinceGoDown = 0;
+		millisecSinceGoDown = 0;
 		goDownFaster = false;
 //		gameIsOver = false;
 //		refreshAllScreen = false;
@@ -88,13 +80,14 @@ public class Player implements Serializable{
 		processHit(2);
 		nextShape = rand.nextInt(7);
 		
-		shadow = new Shadow_Shape(Color.lightGray, isLeft);
+		shadow = new Shadow_Shape(new Color(182,182,182,50), isLeft);
 		initShadow();
 		updateShadow();
+		millisecSinceGoDown = System.currentTimeMillis();
 	}
 	
 	public void restart () { 
-		frameSinceGoDown = 0;
+		millisecSinceGoDown = 0;
 		goDownFaster = false;
 //		score = 0; 
 		// TODO écrire les meilleurs score dans un fichier avec le pseudo du joueur
@@ -102,9 +95,10 @@ public class Player implements Serializable{
 //		lineCount = 0; 
 //		level = 0;
 		start = false;
+		over = false;
 		inPause = false;
 		placedTiles = new LinkedList<Tile>();
-		matrice = new int[20+2][10+2];
+		matrice = new int[20+2+1][10+2];
 		putWalls();
 //		showMatrice();
 //		
@@ -116,7 +110,7 @@ public class Player implements Serializable{
 		processHit(2);
 		nextShape = rand.nextInt(7);
 		
-		shadow = new Shadow_Shape(Color.lightGray, isLeft);
+		shadow = new Shadow_Shape(new Color(182,182,182,50), isLeft);
 		initShadow();
 		updateShadow();
 		
@@ -134,7 +128,7 @@ public class Player implements Serializable{
 	
 	public void initShadow() {
 		for (Tile t : shape.getLayout()) {
-			shadow.addTile( new Tile( new Vector2<Integer>(t.getPosition().getX(),t.getPosition().getY()),Color.lightGray));
+			shadow.addTile( new Tile( new Vector2<Integer>(t.getPosition().getX(),t.getPosition().getY()),new Color(182,182,182,50)));
 		}
 	}
 	
@@ -234,7 +228,7 @@ public class Player implements Serializable{
 				placeShapeInMatrice();
 				placeShapeInPlacedTiles();
 				
-				AudioFile bloc = new AudioFile("bloc",false);
+				AudioFile bloc = new AudioFile("sound_effects/bloc",false);
 				bloc.play();	
 				level++;
 				
@@ -254,12 +248,12 @@ public class Player implements Serializable{
 //				gameIsOver = true;
 //				start = false;
 //				restart();
-				justOver = true;
+				over = true;
 				start = false;
 //				musique.stop();
 				
-				AudioFile gameOver = new AudioFile("gameOver",false);
-				gameOver.play();
+//				AudioFile gameOver = new AudioFile("gameOver",false);
+//				gameOver.play();
 			} else {
 				System.out.println("Erreur: l'entier action doit �tre compris entre 0 et 2");
 //				gameIsOver = true;
@@ -392,7 +386,7 @@ public class Player implements Serializable{
 			}
 		}
 		if (!destroyedLines.isEmpty()) {
-			AudioFile line = new AudioFile("line",false);
+			AudioFile line = new AudioFile("sound_effects/line",false);
 			line.play();
 		}
 		return destroyedLines;
@@ -415,9 +409,9 @@ public class Player implements Serializable{
 //		return destroyedLines;
 	}
 	
-	public void drawTiles(Graphics g) {
+	public void drawTiles(Graphics g,TextureLoader tl) {
 		for (Tile t : placedTiles) {
-			t.Nouveaudraw(isLeft,g);
+			t.draw(isLeft,g,tl);
 		}
 	}
 	
@@ -471,37 +465,33 @@ public class Player implements Serializable{
 	 */
 	public void step() {
 		
-		int frameUntilGoDown = 20;
+		long millisecUntilGoDown = 600;
+		if (goDownFaster) millisecUntilGoDown /= 10;
 		
-		if (!inPause) {
-			if ( frameSinceGoDown <= frameUntilGoDown) { 
-				if (goDownFaster)
-					frameSinceGoDown = frameSinceGoDown+ 10;
-				else
-					frameSinceGoDown++;
-				updateShadow();
-			} else {
+		if (!inPause) { // Faire une pause de plus de 600 ms = redescendre juste après la fin de la pause
+			if ( millisecSinceGoDown+millisecUntilGoDown <= System.currentTimeMillis()) { 
 				shape.goDown();
 				processHit(0);
 				updateShadow();
-				frameSinceGoDown = 0;
+				millisecSinceGoDown = 0;
 //				if (isLeft) showMatrice();
+				millisecSinceGoDown = System.currentTimeMillis();
 			}
+			else updateShadow();
 		}	
 		score = level*4 + lineCount*10;
-		time = System.currentTimeMillis();
 	}
 
 	
 	/**
 	 * Draws the ships and HUDs.
 	 */
-	public void draw(Graphics g) {
+	public void draw(Graphics g, TextureLoader tl) {
 		if (start) {
-			shadow.draw(g);
-			shape.draw(g);
+			shadow.draw(g,tl);
+			shape.draw(g,tl);
 		}
-		drawTiles(g);
+		drawTiles(g,tl);
 	}
 	
 	

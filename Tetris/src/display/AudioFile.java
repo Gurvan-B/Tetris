@@ -1,6 +1,7 @@
 package display;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -10,7 +11,7 @@ import javax.sound.sampled.DataLine;
 
 public class AudioFile {
 
-	private File					soundFile;
+//	private File					soundFile;
 	private AudioInputStream		ais;
 	private AudioFormat				format;
 	private DataLine.Info			info;
@@ -19,15 +20,35 @@ public class AudioFile {
 	
 	public AudioFile (String fileName, boolean loop) {
 		
-		String url = "C:\\Users\\GURVAN\\git\\Tetris";
+//		String url = "C:\\Users\\GURVAN\\git\\Tetris";
 //		System.out.println(url + "ressources\\" + fileName + ".wav");
 		
 		
         this.loop = loop;
-		soundFile = new File(url + "\\Tetris\\ressources\\" + fileName + ".wav");
-//		soundFile = new File("C:\\Users\\GURVAN\\eclipse-workspace\\Tetris\\ressources\\bloc.wav");
+//		soundFile = new File(FileSystems.getDefault().getPath("").toAbsolutePath()+"\\Ressources\\" + fileName + ".wav");
+		
+//		URL imageURL = this.getClass().getClassLoader().getResource(fileName);
+//		if (imageURL == null) {
+//			System.out.println("null URL from filname");
+//			System.exit(0);
+//		}
+//		try {
+//			soundFile = new File(imageURL.toURI());
+//		} catch (URISyntaxException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
 		try {
-			ais = AudioSystem.getAudioInputStream(soundFile);
+//			URL is = this.getClass().getResource("../ressources/musique.wav");
+//			System.out.println(is);
+//			ais = AudioSystem.getAudioInputStream(is);
+			InputStream in = this.getClass().getResourceAsStream("/" +fileName + ".wav");
+//			System.out.println(in);
+			InputStream bufferedIn = new BufferedInputStream(in);
+			ais = AudioSystem.getAudioInputStream(bufferedIn);
+//			ais = AudioSystem.getAudioInputStream(in);
+//			ais = (AudioInputStream) this.getClass().getClassLoader().getResourceAsStream(fileName);
 			format = ais.getFormat();
 			info = new DataLine.Info(Clip.class, format);
 			clip = (Clip) AudioSystem.getLine(info);

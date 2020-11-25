@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import main.Player;
+import packets.BooleanPacket;
+import packets.Packet;
+import packets.PlayerPacket;
 
 
 public class ClientHandler implements Runnable{
@@ -26,25 +29,37 @@ public class ClientHandler implements Runnable{
 	@Override
 	public void run() {
 		try {
-			sendToClient(isLeft);
+			sendToClient(new BooleanPacket(isLeft,BooleanPacket.isLeftBool));
 			while (true) {
-				Object request = in.readObject();
-				System.out.println("[SERVER] " + isLeft + " | " + request);
+				Object packet = in.readObject();
+				server.displayMessageLog(isLeft + " | " + packet,false);
 					
-				if (request instanceof Player) {
-					server.sendToTheClient(!isLeft,request);
-				} else System.out.println("[SERVER] Object rejected, did not sent");
+				if (packet instanceof Packet) {
+					if (((Packet)packet).getType() == BooleanPacket.isReadyBool){
+						server.setIsReady(((BooleanPacket)packet).getBoolean(), isLeft);
+						if (server.bothReady()) {
+							server.sendToTheClient(isLeft,new BooleanPacket(true,BooleanPacket.beginBool));
+							server.sendToTheClient(!isLeft,new BooleanPacket(true,BooleanPacket.beginBool));
+						}
+					} else if (packet instanceof PlayerPacket) {
+							Player player = ((PlayerPacket)packet).getPlayer();
+							if (player.over) {
+								server.setIsReady(false,isLeft);
+							}
+							server.sendToTheClient(!isLeft,packet);
+						}
+				} else server.displayMessageLog("Object rejected, did not sent",true);
 				
 			}
 			} catch (IOException e) {
-				e.printStackTrace(); // TODO Retirer l'affichage de l'erreur
+//				e.printStackTrace(); // TODO Retirer l'affichage de l'erreur
 				
 				if (isLeft) {
-					System.out.println("[SERVER] Left player disconnected");
+					server.displayMessageLog("Left player disconnected",true);
 					server.stopLeft();
 				}
 				else {
-					System.out.println("[SERVER] Right player disconnected");
+					server.displayMessageLog("Right player disconnected",true);
 					server.stopRight();
 				}
 			} catch (ClassNotFoundException e) {

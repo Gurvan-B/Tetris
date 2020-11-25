@@ -14,11 +14,11 @@ public class J_Shape extends Shape_Class {
 
 	public J_Shape(Color color, boolean isLeft) {
 		super(color,isLeft);
-		centerPiece = new Tile( new Vector2<Integer>(5, 3), color );
-		addTile( new Tile( new Vector2<Integer>(4, 4), color ) ); 
-		addTile( new Tile( new Vector2<Integer>(5, 4), color ) );
+		centerPiece = new Tile( new Vector2<Integer>(5, 2), color );
+		addTile( new Tile( new Vector2<Integer>(4, 3), color ) ); 
+		addTile( new Tile( new Vector2<Integer>(5, 3), color ) );
 		addTile( centerPiece );
-		addTile( new Tile( new Vector2<Integer>(5, 2), color ) );
+		addTile( new Tile( new Vector2<Integer>(5, 1), color ) );
 		
 	}
 	

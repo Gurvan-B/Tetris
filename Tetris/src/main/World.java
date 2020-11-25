@@ -5,25 +5,17 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import client.Client;
 import display.AudioFile;
-//import display.Button;
 import display.Vector2;
 import graphiques.Bindings;
 import graphiques.Mouse;
-import shape.I_Shape;
-import shape.J_Shape;
-import shape.L_Shape;
-import shape.O_Shape;
-import shape.S_Shape;
-import shape.Shape_Class;
-import shape.T_Shape;
-import shape.Tile;
-import shape.Z_Shape;
+import shape.*;
 
 public class World {
 
@@ -32,43 +24,139 @@ public class World {
 //	private StartButton 	startButton;
 //	private Bindings 		bind;
 	public AudioFile 		musique;
-	private int 			frameSinceYouWin;
-	public int			x;
-	private BufferedImage logo;
-	private BufferedImage fond;
-	public Bindings bind;
-	public Mouse mouse;
+	private long 			milliSecSinceYouWin;
+	public 	int				x;
+	private BufferedImage 	logo;
+	private BufferedImage 	fond;
+	private BufferedImage	background;
+	public 	Bindings		bind;
+	public 	Mouse 			mouse;
+	public	boolean			playingLeft;
+	public	boolean			playerIsReady; // If this world is ready to start or not
+	public	boolean			playing;
+	public	Client			client;
+	private long			millisSecSinceChrono;
+	private int 			chrono;
+	public boolean 			drawChrono;
+	public boolean			showFps;
+	private TextureLoader	tl;
 	
 	public World() {
-		leftPlayer = new Player(true,this);
-		rightPlayer = new Player(false,this);
-		musique = new AudioFile("musique",true);
-		frameSinceYouWin = 0;
+		leftPlayer = new Player(true);
+		rightPlayer = new Player(false);
+		musique = new AudioFile("sound_effects/musique",true);
+		milliSecSinceYouWin = 0;
+		millisSecSinceChrono=0;
+		chrono = 4;
 		x= -1; // hors de l'écran de base
-		
-		bind = new Bindings(this);
 		mouse = new Mouse(this);
-		try {	
-			fond = ImageIO.read(new File("C:\\Users\\GURVAN\\git\\Tetris\\Tetris\\ressources\\fond.png"));
+		bind = new Bindings(this);
+		playerIsReady = false;
+		playing = false;
+
+		fond = loadImage("images/fond");
+		logo = loadImage("images/logo");
+		background = loadImage("images/background");
+		showFps = false;
+		tl = new TextureLoader();
+	}
+	
+//	public BufferedImage loadImage(String fileName) {
+//		try {	
+//			return ImageIO.read(new File(FileSystems.getDefault().getPath("").toAbsolutePath() + "\\Ressources\\" + fileName + ".png"));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+	
+	BufferedImage loadImage(String fn) {
+		InputStream inputStr = this.getClass().getResourceAsStream("/" + fn + ".png");
 			
+		BufferedImage image = null;
+		
+		try {
+			image = ImageIO.read(inputStr);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return image;
+	}
+	
+//	public BufferedImage loadImage(String fileName) {
+//		try {	
+//			return ImageIO.read(new File("C:\\Users\\GURVAN\\git\\Tetris\\Tetris\\ressources\\" + fileName + ".png"));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+	
+	public void reset() {
+		leftPlayer.restart();
+		leftPlayer.restartStats();
 		
-		try {	
-			logo = ImageIO.read(new File("C:\\Users\\GURVAN\\git\\Tetris\\Tetris\\ressources\\logo.png"));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		rightPlayer.restart();
+		rightPlayer.restartStats();
+		x=-1;
+	}
+	
+	public void processChrono() {
+		if (drawChrono) {
+			if (millisSecSinceChrono+1000 >= System.currentTimeMillis()) {
+				} else {
+					millisSecSinceChrono = System.currentTimeMillis();
+					if(chrono != 0) {
+						chrono --;
+						if (chrono != 0) new AudioFile("sound_effects/countdown",false).play();
+						else new AudioFile("sound_effects/go",false).play();
+					} else {
+						startPlaying();
+						drawChrono = false;
+						chrono = 4;
+						musique.play();
+					}
+				}
 		}
-		
+	}
+	
+	public void drawChrono(Graphics g) {
+		if (drawChrono) {
+			String value = chrono +"";
+			if (chrono == 0) value = "GO";
+			int x=0;
+			if (!playingLeft) x = 1380;
+			drawBox(g, 270+x, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
+			drawText(g, 270+x, 100, value, Color.green);
+		}
+	}
+	
+	public void drawFPS(Graphics g, int lastFPS) {
+		if (showFps) drawText(g, 1900, 10, lastFPS+"", Color.green);
+	}
+	
+//	public boolean getPlaying() {
+//		return (playing);
+//	}
+	
+	public void setClient(Client client) {
+		this.client = client;
+	}
+	
+	public Player getPlayingPlayer() {
+		if (playingLeft) return leftPlayer;
+		else return rightPlayer;
+	}
+	
+	public Player getOpponent() {
+		if (playingLeft) return rightPlayer;
+		else return leftPlayer;
 	}
 	
 	// TODO Faire apparaitre les shapes tout en haut
 	
 	public void gameOverActions() { // mettre tout ça dans une classe World et renommer World "Game" ou "Player" pour mettre toutes les fonctions supérieures dans World
 		musique.stop();
-		
 		boolean vicL = leftPlayer.score>rightPlayer.score; // conditions de victoires
 		boolean vicR = leftPlayer.score<rightPlayer.score;
 		if (vicL) { // Droite victorieux
@@ -81,23 +169,33 @@ public class World {
 				
 //		startButton = new StartButton( new Vector2<Double>(0.3,0.175) , new Vector2<Double>(0.03,0.015)  );
 			
-		leftPlayer.start = false;
-		rightPlayer.start = false;
+//		getPlayingPlayer().start = false;
+//		rightPlayer.start = false; TODO
 			
-		leftPlayer.justOver = false;
-		rightPlayer.justOver = false;
+//		getPlayingPlayer().justOver = false;
+		client.opponentJustOver = false;
+		playing = false;
+		playerIsReady = false;
+		client.stopSending();
+		
+		if (getPlayingPlayer().score <= getOpponent().score) {
+			AudioFile lost = new AudioFile("sound_effects/lost",false);
+			lost.play();
+		} else {
+			AudioFile won = new AudioFile("sound_effects/won",false);
+			won.play();
+		}
+		
 	}
 	
 	public void drawYouWin(Graphics g) {
 		if ( x >= 0 ){
-			if (frameSinceYouWin <= 20) {
-			drawBox(g, 270+x, 100, 200, 100, 10, 10, Color.lightGray);
+			if (milliSecSinceYouWin+400 >= System.currentTimeMillis()) {
+			drawBox(g, 270+x, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
 			drawText(g, 270+x, 100, "YOU WIN", Color.green);
-			frameSinceYouWin ++;
-			} else if (frameSinceYouWin <= 40) {
-				frameSinceYouWin++;
+			} else if (milliSecSinceYouWin+800 >= System.currentTimeMillis()) {
 			} else {
-				frameSinceYouWin = 0;
+				milliSecSinceYouWin = System.currentTimeMillis();
 			}
 		}
 		
@@ -151,15 +249,26 @@ public class World {
 		}
 	}
 	
-	public void drawScreen(Graphics g) {
-		leftPlayer.draw(g);
-		rightPlayer.draw(g);
+	public void drawScreen(Graphics g, int lastFPS) {
+		drawBackground(g);
+		leftPlayer.draw(g,tl);
+		rightPlayer.draw(g,tl);
 		drawSideScreen(g);
 		drawYouWin(g);
+		processChrono();
+		drawChrono(g);
+		drawFPS(g,lastFPS);
 	}
 	
-	public boolean gameIsOver() {
-		return (leftPlayer.start==false && rightPlayer.start==false);
+//	public boolean playing() {
+////		return (leftPlayer.start==false && rightPlayer.start==false);
+//		return ((playingLeft && leftPlayer.start) || (!playingLeft && rightPlayer.start));
+//	}
+	
+
+	public void startPlaying() {
+		leftPlayer.start = rightPlayer.start = true;
+		playing = true;
 	}
 
 	
@@ -175,7 +284,7 @@ public class World {
 //		g.fillRect(middleX, middleY, 1, 1);
 	}
 	
-	public void drawBox(Graphics g, int middleX, int middleY,int sizeX, int sizeY, int borderSizeX, int borderSizeY, Color borderColor) {
+	public void drawBox(Graphics g, int middleX, int middleY,int sizeX, int sizeY, int borderSizeX, int borderSizeY, Color borderColor, Color middleColor) {
 //		int sizeX = 200;
 //		int sizeY = 100;
 		
@@ -183,7 +292,7 @@ public class World {
 		g.setColor(borderColor);
 		g.fillRect(middleX-sizeX/2, middleY-sizeY/2, sizeX, sizeY);
 		
-		g.setColor(Color.white);
+		g.setColor(middleColor);
 		g.fillRect(middleX-sizeX/2+borderSizeX, middleY-sizeY/2+borderSizeY, sizeX-2*borderSizeX, sizeY-2*borderSizeX);
 		
 	}
@@ -193,6 +302,10 @@ public class World {
 		g.setColor(color);
 		g.fillRect(middleX-sizeX/2, middleY-sizeY/2, sizeX, sizeY);
 		
+	}
+	
+	public void drawBackground(Graphics g) {
+		g.drawImage(background,0,0,1920,1080,null);
 	}
 	
 	public void drawSideScreen(Graphics g) {
@@ -248,29 +361,30 @@ public class World {
 		Color borderColor = new Color(29,0,0,255);
 		
 		int yScore = 490;
-		drawBox(g,resX/2,yScore,sizeX,sizeY, borderSizeX,borderSizeY,borderColor);
+		drawBox(g,resX/2,yScore,sizeX,sizeY, borderSizeX,borderSizeY,borderColor,Color.white);
 		drawText(g,resX/2,yScore,leftPlayer.score + " SCORE " + rightPlayer.score,c);
 		
 		int yLevel = 400;
-		drawBox(g,resX/2-90,yLevel,sizeX,sizeY,borderSizeX,borderSizeY,borderColor);
+		drawBox(g,resX/2-90,yLevel,sizeX,sizeY,borderSizeX,borderSizeY,borderColor,Color.white);
 		drawText(g,resX/2-90,yLevel,leftPlayer.level + " LEVEL " + rightPlayer.level,c);
 		
 		int yLine = 400;
-		drawBox(g,resX/2+90,yLine,sizeX,sizeY,borderSizeX,borderSizeY,borderColor);
+		drawBox(g,resX/2+90,yLine,sizeX,sizeY,borderSizeX,borderSizeY,borderColor,Color.white);
 		drawText(g,resX/2+90,yLine,leftPlayer.lineCount + " LINES " + rightPlayer.lineCount,c);
 		
-		if (this.gameIsOver()) {
+		if (!playing && !drawChrono) {
 			int yStart = 620;
-			drawBox(g,resX/2,yStart,sizeX,sizeY,borderSizeX,borderSizeY,borderColor);
-			drawText(g,resX/2,yStart,"START",c);
+			drawBox(g,resX/2,yStart,sizeX,sizeY,borderSizeX,borderSizeY,borderColor,Color.white);
+			if(playerIsReady) drawBox(g,resX/2,yStart,100,50,5,5,new Color(66,209,54),Color.green);
+			drawText(g,resX/2,yStart,"READY",c);
 		}
 		int yShape = 850;
 		int sizeShapeX = 300;
 		int sizeShapeY = 300;
-		drawBox(g,resX/2-(sizeShapeX/2-borderSizeX),yShape,sizeShapeX,sizeShapeY,borderSizeX,borderSizeY,borderColor);
-		drawBox(g,resX/2+(sizeShapeX/2-borderSizeX),yShape,sizeShapeX,sizeShapeY,borderSizeX,borderSizeY,borderColor);
+		drawBox(g,resX/2-(sizeShapeX/2-borderSizeX),yShape,sizeShapeX,sizeShapeY,borderSizeX,borderSizeY,borderColor,Color.white);
+		drawBox(g,resX/2+(sizeShapeX/2-borderSizeX),yShape,sizeShapeX,sizeShapeY,borderSizeX,borderSizeY,borderColor,Color.white);
 
-		if (!gameIsOver()) {
+		if (playing) {
 			drawNextShape(g,leftPlayer,resX/2-(sizeShapeX/2-borderSizeX),yShape);
 			drawNextShape(g,rightPlayer,resX/2+(sizeShapeX/2-borderSizeX),yShape);
 		}

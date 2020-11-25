@@ -14,11 +14,11 @@ public class I_Shape extends Shape_Class {
 
 	public I_Shape(Color color, boolean isLeft) {
 		super(color, isLeft);
-		centerPiece = new Tile( new Vector2<Integer>(5, 4), color ); // 2e en partant du bas
-		addTile( new Tile( new Vector2<Integer>(5, 5), color ) );
+		centerPiece = new Tile( new Vector2<Integer>(5, 3), color ); // 2e en partant du bas
+		addTile( new Tile( new Vector2<Integer>(5, 4), color ) );
 		addTile( centerPiece );
-		addTile( new Tile( new Vector2<Integer>(5, 3), color ) );
 		addTile( new Tile( new Vector2<Integer>(5, 2), color ) );
+		addTile( new Tile( new Vector2<Integer>(5, 1), color ) );
 		
 //		for (int i = 0 ; i<=25;i++) {
 //			addTile( new Tile( new Vector2<Double>(i*0.02, 0.44), color ) );
