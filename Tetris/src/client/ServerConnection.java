@@ -87,6 +87,7 @@ public class ServerConnection implements Runnable{
 			try {
 				in.close();
 				server.close();
+				System.exit(0);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

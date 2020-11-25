@@ -13,8 +13,8 @@ import packets.PlayerPacket;
 public class ClientHandler implements Runnable{
 
 	private 	Socket 				client;
-	private 	ObjectOutputStream 	out;
-	private 	ObjectInputStream 	in;
+	protected 	ObjectOutputStream 	out;
+	protected 	ObjectInputStream 	in;
 	private 	boolean 			isLeft;
 	private 	Server 				server;
 	 

@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 
 public class Server implements Runnable{
@@ -16,15 +17,27 @@ public class Server implements Runnable{
 	protected	boolean			leftReady;
 	protected	boolean			rightReady;
 	protected	boolean			showLogs = false;
+	private		Scanner			sc;
 	
 	
 //	private ArrayList<ClientHandler> clients = new ArrayList<>();
 //	private ExecutorService pool = Executors.newFixedThreadPool(4); // TODO
 	
 	public Server () {
-		running = false;
 		leftClient = null;
 		rightClient = null;
+		running = true;
+		sc = new Scanner(System.in);
+		Thread console = new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+				String request = sc.nextLine();
+				if (request.charAt(0) == '/') processCommand(request.substring(1));
+				}
+			}
+		};
+		console.start();
 	}
 	
 	@Override
@@ -46,10 +59,9 @@ public class Server implements Runnable{
 		displayMessageLog("IP: " + ip + " | Port: " + port,true);
 		displayMessageLog("Starting...",true);
 		
-		running = true;
+		displayMessageLog("Type a command: ",true);
 		while (running) {
 			try {
-				displayMessageLog("Waiting for connexion...",true);
 				Socket client = sS.accept();
 				
 				if (leftClient == null) {
@@ -70,10 +82,41 @@ public class Server implements Runnable{
 //				new Thread(clientThread).start();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				stopLeft();
+				stopRight();
+//				running = false;
 			}
 		}
 			
 
+	}
+	
+	public void processCommand(String command) {
+		switch (command) {
+		case "stop" : {
+			running = false;
+			stopLeft();
+			stopRight();
+			displayMessageLog("Server stopped", true);
+			System.exit(0);
+			break;
+		}
+		case "kick left" :{
+			stopLeft();
+			displayMessageLog("Kicked left player", true);
+			break;
+		}
+		case "kick right" :{
+			stopRight();
+			displayMessageLog("Kicked right player", true);
+			break;
+		}
+		default: {
+			displayMessageLog("Unknown command", true);
+			break;
+		}
+		}
 	}
 	
 	public void displayMessageLog(String message,boolean displayAnyway) {
@@ -98,12 +141,28 @@ public class Server implements Runnable{
 	}
 	
 	public void stopLeft() {
-		leftClient = null;
+		if (leftClient != null) {
+			try {
+				leftClient.out.close();
+				leftClient.in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			leftClient = null;
+		}
 		leftReady = false;
 	}
 	
 	public void stopRight() {
-		rightClient = null;
+		if (rightClient != null) {
+			try {
+				rightClient.out.close();
+				rightClient.in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			rightClient = null;
+		}
 		rightReady = false;
 	}
 }
