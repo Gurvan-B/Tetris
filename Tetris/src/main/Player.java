@@ -485,10 +485,11 @@ public class Player implements Serializable{
 	 */
 	public void step() {
 		
-		if (goDownFaster) millisecUntilGoDown /= 10;
+		long millisecUntilGoDown2 = millisecUntilGoDown;
+		if (goDownFaster) millisecUntilGoDown2 /= 10;
 		
 		if (!inPause) { // Faire une pause de plus de 600 ms = redescendre juste après la fin de la pause
-			if ( millisecSinceGoDown+millisecUntilGoDown <= System.currentTimeMillis()) { 
+			if ( millisecSinceGoDown+millisecUntilGoDown2 <= System.currentTimeMillis()) { 
 				shape.goDown();
 				processHit(0);
 				updateShadow();
