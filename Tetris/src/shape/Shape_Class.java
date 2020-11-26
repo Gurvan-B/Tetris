@@ -83,7 +83,7 @@ public abstract class Shape_Class implements Serializable {
 //		}
 //	}
 	
-	public void drawForSideScreen(Graphics g,int centerX, int centerY) {
+	public void drawForSideScreen(Graphics g,int centerX, int centerY, TextureLoader tl) {
 		for ( Tile t : layout) {
 			int size = centerPiece.size;
 			int x = centerPiece.getPosition().getX()*size;
@@ -95,7 +95,7 @@ public abstract class Shape_Class implements Serializable {
 //			int y = v.getY();
 			x = centerX-x+size/2;
 			y = centerY-y+size/2;
-			t.drawForSideScreen(g,x,y);
+			t.drawForSideScreen(g,x,y,tl);
 		}
 	}
 

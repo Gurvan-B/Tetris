@@ -30,6 +30,7 @@ public class Client implements Runnable{
 		isLeftDefined = false;
 		opponentJustOver = false;
 		lockDefineLeft = new Object();
+		displayMessageLog("Starting ...", true);
 		if (connect()) {
 			ServerConnection servConn = new ServerConnection(s,this);
 			new Thread(servConn).start();
@@ -41,7 +42,7 @@ public class Client implements Runnable{
 					e.printStackTrace();
 				}
 			}
-		} else System.exit(1);
+		} else System.exit(0);
 	}
 	
 	@Override
@@ -120,7 +121,7 @@ public class Client implements Runnable{
 	public void setIsleft(boolean isLeft) {
 			this.isLeft = isLeft;
 			w.playingLeft=isLeft;
-			w.bind.updatePlayer();
+			w.bind.updatePlayers();
 	}
 	
 	public boolean getisLeftDefined() {
@@ -145,19 +146,18 @@ public class Client implements Runnable{
 	}
 	
 	public boolean connect(){
-//		String ip = "192.168.137.1";
-//		int port = 6585;
 		String ip = "";
 		int port = 0;
 		ip = JOptionPane.showInputDialog(null,"Enter ip adress", "Connect to a server",JOptionPane.PLAIN_MESSAGE);
-//			System.out.println(ip);
 		String portSt = JOptionPane.showInputDialog(null,"Enter port adress", "Connect to a server",JOptionPane.PLAIN_MESSAGE);
-//			System.out.println(portSt);
 		try {
 			port = Integer.parseInt(portSt);
 		} catch (NumberFormatException e) {
 		}
 		try {
+			System.out.println("connexion auto à supprimer");
+			ip = "192.168.137.1";
+			port = 6585;
 			s = new Socket(ip,port);
 			out = new ObjectOutputStream(s.getOutputStream());
 			return true;

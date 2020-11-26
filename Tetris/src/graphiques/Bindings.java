@@ -16,7 +16,8 @@ public class Bindings implements KeyListener {
     private Object keyLock = new Object();
     private Key[] keys;
     public World w;
-    private Player p;
+    private Player p1;
+    private	Player p2; // Right Player always
 	
 	public Bindings(World w) {
 //		this.leftPl = w.leftPlayer;
@@ -31,45 +32,82 @@ public class Bindings implements KeyListener {
 		
 			
 			// Left player
-		if (p.start && !p.inPause) {
+		if (p1.start && !p1.inPause) {
 			
 			if( keys[KeyEvent.VK_Q].mustProcess() ) {
-				p.shape.goLeft();
-				p.processHit(1);
+				p1.shape.goLeft();
+				p1.processHit(1);
 			}
 			
 			
 			if( keys[KeyEvent.VK_D].mustProcess() ) {
-				p.shape.goRight();
-				p.processHit(1);
+				p1.shape.goRight();
+				p1.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_S].mustProcess() ) {
-				p.shape.rotateLeft(true);
-				p.processHit(1);
+				p1.shape.rotateLeft(true);
+				p1.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_Z].mustProcess() ) {
-				p.shape.rotateRight(true);
-				p.processHit(1);
+				p1.shape.rotateRight(true);
+				p1.processHit(1);
 			}
 			
 			if( keys[KeyEvent.VK_SPACE].mustProcess() ) {
-				p.goMaxDown();
+				p1.goMaxDown();
 			}
 			
 			if( keys[KeyEvent.VK_SHIFT].mustProcess() ) {
-				p.goDownFaster = true;
+				p1.goDownFaster = true;
 			} else {
-				p.goDownFaster = false;
+				p1.goDownFaster = false;
 			}
 			
+		}
+		
+		if (p2 != null) {
+		// Right player
+			if (p2.start && !p2.inPause) {	
+				if( keys[KeyEvent.VK_LEFT].mustProcess() ) {
+					p2.shape.goLeft();
+					p2.processHit(1);
+				}
+				
+				
+				if( keys[KeyEvent.VK_RIGHT].mustProcess() ) {
+					p2.shape.goRight();
+					p2.processHit(1);
+				}
+				
+				if( keys[KeyEvent.VK_DOWN].mustProcess() ) {
+					p2.shape.rotateLeft(true);
+					p2.processHit(1);
+				}
+				
+				if( keys[KeyEvent.VK_UP].mustProcess() ) {
+					p2.shape.rotateRight(true);
+					p2.processHit(1);
+				}
+				
+				if( keys[KeyEvent.VK_ENTER].mustProcess() ) {
+					p2.goMaxDown();
+				}
+				
+				if( keys[KeyEvent.VK_INSERT].mustProcess() ) {
+					p2.goDownFaster = true;
+				} else {
+					p2.goDownFaster = false;
+				}
+				
+			}
 		}
 		
 			// Pause and Escape
 			
 			if( keys[KeyEvent.VK_P].mustProcess() ) {
-				p.inPause = !p.inPause;
+				p1.inPause = !p1.inPause;
 			}
 
 			if( keys[KeyEvent.VK_ESCAPE].mustProcess() ) {
@@ -84,19 +122,19 @@ public class Bindings implements KeyListener {
 	
 		public void initKeys() {
 			
-			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 120);
-			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 120);
+			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 100);
+			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 100);
 			keys[KeyEvent.VK_SHIFT] = new Key(KeyEvent.VK_SHIFT, 0);
 			keys[KeyEvent.VK_S] = new Key(KeyEvent.VK_S, 170);
 			keys[KeyEvent.VK_Z] = new Key(KeyEvent.VK_Z, 170);
 			keys[KeyEvent.VK_SPACE] = new Key(KeyEvent.VK_SPACE, 300);
 			
-//			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 6);
-//			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 6);
-//			keys[KeyEvent.VK_INSERT] = new Key(KeyEvent.VK_INSERT, 0);
-//			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 10);
-//			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 10);
-//			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 16);
+			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 100);
+			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 100);
+			keys[KeyEvent.VK_INSERT] = new Key(KeyEvent.VK_INSERT, 0);
+			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 170);
+			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 170);
+			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 300);
 			
 			keys[KeyEvent.VK_P] = new Key(KeyEvent.VK_P, 500);
 			keys[KeyEvent.VK_ESCAPE] = new Key(KeyEvent.VK_ESCAPE,0);
@@ -155,11 +193,17 @@ public class Bindings implements KeyListener {
 	}
 
 
-	public void updatePlayer() {
-		if(w.playingLeft) this.p = w.leftPlayer;
-		else this.p = w.rightPlayer;
+	public void updatePlayers() {
+		if (w.local) {
+			this.p1 = w.leftPlayer;
+			this.p2 = w.rightPlayer;
+		} else {
+			if(w.playingLeft) this.p1 = w.leftPlayer;
+			else this.p1 = w.rightPlayer;
+		}
 		
 	}
+
 
 
 //	InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);

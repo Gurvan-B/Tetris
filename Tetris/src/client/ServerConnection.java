@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import main.Player;
 import packets.BooleanPacket;
+import packets.IntPacket;
 import packets.Packet;
 import packets.PlayerPacket;
 
@@ -58,9 +59,10 @@ public class ServerConnection implements Runnable{
 					else if (((Packet)packet).getType()==BooleanPacket.beginBool) {
 						@SuppressWarnings("unused") // TODO
 						boolean request = ((BooleanPacket)packet).getBoolean();
-						client.w.drawChrono = request;
-						if (client.w.drawChrono) {
+						if (request) {
 							client.w.reset();
+							client.w.drawChrono = true;
+							client.w.countdown.play();
 							client.startSending();
 						}
 					}
@@ -73,24 +75,31 @@ public class ServerConnection implements Runnable{
 						}
 						client.updateOtherPlayer(request);
 					}
+					
+					else if (packet instanceof IntPacket && ((IntPacket)packet).getType() == IntPacket.setDifficulty) {
+						int request = ((IntPacket)packet).getInt();
+						client.w.setDifficultyBothPlayers(request);
+						client.displayMessageLog("Set difficulty to " + request, true);
+					}
+					
 					else client.displayMessageLog("Packet non identifie: " + packet,true);
 					}
 				else client.displayMessageLog("Objet non identifie: " + packet,true);
 			}
 			
 		} catch (IOException | ClassNotFoundException e) {
-//			e.printStackTrace(); // A retirer plus tard
+			e.printStackTrace(); // A retirer plus tard
 			client.displayMessageLog("Connection lost",true);
 			JOptionPane.showMessageDialog(null, "Connection lost","Connection error",JOptionPane.WARNING_MESSAGE);
 		}
 		finally {
-			try {
-				in.close();
-				server.close();
-				System.exit(0);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				in.close();
+//				server.close();
+//				System.exit(0);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 			
 		}
 		

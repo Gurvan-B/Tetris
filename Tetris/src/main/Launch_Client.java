@@ -2,7 +2,7 @@ package main;
 
 import graphiques.MyFrame;
 
-public class Main {
+public class Launch_Client {
 
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")

@@ -98,7 +98,7 @@ public class Tile implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "X: " + tilePos.getX() + "Y: " + tilePos.getY();
+		return "X:" + tilePos.getX() + " Y: " + tilePos.getY();
 		
 	}
 	
@@ -172,18 +172,53 @@ public class Tile implements Serializable{
 	}
 	
 	
-	public void drawForSideScreen(Graphics g, int x, int y) {
+	public void drawForSideScreen(Graphics g, int x, int y, TextureLoader tl) {
 		if (tilePos == null)
 			return;
 		
 		x += size * (tilePos.getX()-1);
 		y += size * (tilePos.getY()-1);
 		
-		g.setColor(Color.black);
-		g.fillRect(x-borderSize, y-borderSize, size+borderSize*2, size+borderSize*2);
-		
-		g.setColor(color);
-		g.fillRect(x+borderSize, y+borderSize, size-borderSize*2, size-borderSize*2);
+		BufferedImage texture;
+		switch (color.hashCode()) {
+			case -20561:{ // hashcode for pink
+				texture = tl.purple;
+				break;
+			}
+			case -16711681:{
+				texture = tl.cyan;
+				break;
+			}
+			case -16776961:{
+				texture = tl.blue;
+				break;
+			}
+			case -14336:{
+				texture = tl.orange;
+				break;
+			}
+			case -256:{
+				texture = tl.yellow;
+				break;
+			}
+			case -65536:{
+				texture = tl.red;
+				break;
+			}
+			case -16711936:{
+				texture = tl.green;
+				break;
+			}
+			default: {
+				g.setColor(Color.black);
+				g.fillRect(x-borderSize, y-borderSize, size+borderSize*2, size+borderSize*2);
+				
+				g.setColor(color);
+				g.fillRect(x+borderSize, y+borderSize, size-borderSize*2, size-borderSize*2);
+				return;
+			}
+		}
+		g.drawImage(texture,x,y,size,size,null);
 	}
 	
 	/**

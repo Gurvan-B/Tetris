@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import javax.swing.JOptionPane;
+
 import main.Player;
 import packets.BooleanPacket;
 import packets.Packet;
@@ -66,13 +69,15 @@ public class ClientHandler implements Runnable{
 				e.printStackTrace();
 			}
 			finally {
-				try {
-					in.close();
-					out.close();
-					client.close();
-				} catch (IOException e) {
-					e.printStackTrace();	// TODO A Retirer
-				}
+//				System.out.println("coucou"+ System.currentTimeMillis());
+//				JOptionPane.showMessageDialog(null, "erreur","Connection error coucou",JOptionPane.WARNING_MESSAGE);
+//				try {
+//					in.close();
+//					out.close();
+//					client.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();	// TODO A Retirer
+//				}
 			}
 	}
 	

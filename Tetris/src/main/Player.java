@@ -42,6 +42,8 @@ public class Player implements Serializable{
 //	public	AudioFile 			musique;
 	public	boolean				over;
 	public	boolean				isLeft;
+	public 	boolean				localPlayerJustOver;
+	private	long 				millisecUntilGoDown;
 	
 	/**
 	 * Creates the world with the bindings, the player ship
@@ -65,7 +67,7 @@ public class Player implements Serializable{
 		inPause = false;
 		placedTiles = new LinkedList<Tile>();
 //		player = new I_Shape(StdDraw.CYAN);
-		matrice = new int[20+2][10+2]; // Pour utiliser la matrice se décaler des murs ET de 1 car commence à 0 et pos commence à 1 !!
+		matrice = new int[20+2+1][10+2]; // Pour utiliser la matrice se décaler des murs ET de 1 car commence à 0 et pos commence à 1 !!
 //		showMatrice();
 		putWalls();
 //		showMatrice();
@@ -76,6 +78,7 @@ public class Player implements Serializable{
 		
 		shape = randomShape(rand.nextInt(7));
 		
+		localPlayerJustOver = false;
 		
 		processHit(2);
 		nextShape = rand.nextInt(7);
@@ -83,6 +86,7 @@ public class Player implements Serializable{
 		shadow = new Shadow_Shape(new Color(182,182,182,50), isLeft);
 		initShadow();
 		updateShadow();
+		millisecUntilGoDown = 600;
 		millisecSinceGoDown = System.currentTimeMillis();
 	}
 	
@@ -116,6 +120,21 @@ public class Player implements Serializable{
 		
 //		StdDraw.setPenColor(StdDraw.WHITE);
 //		StdDraw.filledRectangle(0.1, 0.2, 0.1, 0.2);
+	}
+	
+	public boolean setDifficulty (int x) {
+		long newDifficulty;
+		if (x<=5) {
+			newDifficulty = 900-(100*x); // 1 = 800 , .. 5 = 400
+		} else {
+			x-=5;
+			newDifficulty = 250-(50*x); // 6 = 200
+			}
+		if (newDifficulty >= 0 ) {
+			millisecUntilGoDown = newDifficulty;
+			return true;
+		}
+		return false;
 	}
 	
 	public void restartStats () {
@@ -250,6 +269,7 @@ public class Player implements Serializable{
 //				restart();
 				over = true;
 				start = false;
+				localPlayerJustOver = true;
 //				musique.stop();
 				
 //				AudioFile gameOver = new AudioFile("gameOver",false);
@@ -377,7 +397,7 @@ public class Player implements Serializable{
 		for (int i = 1; i<matrice.length-1;i++) {
 			if ( lineIsFull(i) ) {
 				clearLine(i);
-				destroyedLines.add(matrice.length-i);
+				destroyedLines.add(i);
 				lineCount ++;
 				for (int line2 = i-1 ; line2 > 0 && i > 1 ; line2--) {
 					swapLines(i,line2);
@@ -420,7 +440,7 @@ public class Player implements Serializable{
 		for (int line : destroyedLines) {
 			placedTiles.removeIf( t -> ( t.getPosition().getY() == line ));
 			for (Tile t : placedTiles) {
-				if (t.getPosition().getY() > line) {
+				if (line - t.getPosition().getY() > 0) {
 					t.updatePosition( new Vector2<Integer> (t.getPosition().getX(), t.getPosition().getY()+1) );
 				}
 			}
@@ -465,7 +485,6 @@ public class Player implements Serializable{
 	 */
 	public void step() {
 		
-		long millisecUntilGoDown = 600;
 		if (goDownFaster) millisecUntilGoDown /= 10;
 		
 		if (!inPause) { // Faire une pause de plus de 600 ms = redescendre juste après la fin de la pause

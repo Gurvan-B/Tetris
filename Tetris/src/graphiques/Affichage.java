@@ -28,8 +28,16 @@ public class Affichage extends JPanel implements ActionListener {
 		w = new World();
 		timer = new Timer(1000/maxFps,this);
 		
-		client = new Client(w);
-		w.setClient(client);
+//		String portSt = JOptionPane.showInputDialog(null,"Enter port adress", "Connect to a server",JOptionPane.PLAIN_MESSAGE);
+		
+		w.defineLocal();
+		if (!w.local) {
+			client = new Client(w);
+			w.setClient(client);
+		} else {
+			w.setDifficulty();
+			w.bind.updatePlayers();
+		}
 		
 //		w.reset();
 //		w.playing=true;
@@ -77,17 +85,22 @@ public class Affichage extends JPanel implements ActionListener {
 		w.bind.processKeys();
 		
 		// Makes a step for in the world
-		if (w.leftPlayer.start && w.playingLeft) { // TODO A changer si l'on veut descendre à la même vitesse selon les fps
+		if (w.leftPlayer.start && (w.local || w.playingLeft))  { // TODO A changer si l'on veut descendre à la même vitesse selon les fps
 			w.leftPlayer.step();
 		}
-		if (w.rightPlayer.start && !w.playingLeft) {
+		if (w.rightPlayer.start && (w.local || !w.playingLeft)) {
 			w.rightPlayer.step();
 		}
 		
 		// Actions when both players just lost
 //		if (w.getPlayingPlayer().justOver) System.out.println("PlayingjustOver");
 //		if (client.opponentJustOver) System.out.println("clientJustOver");
-		if (!w.getPlayingPlayer().start && client.opponentJustOver) {
+		if (w.local) {
+			if (w.leftPlayer.localPlayerJustOver && w.rightPlayer.localPlayerJustOver) {
+				w.gameOverActions();
+			}
+		}
+		else if (!w.getPlayingPlayer().start && client.opponentJustOver) {
 			w.gameOverActions();
 		}
 //		}
@@ -110,6 +123,7 @@ public class Affichage extends JPanel implements ActionListener {
 			refreshLastSecond++;
 		}
 	}
+	
 	
 
 }

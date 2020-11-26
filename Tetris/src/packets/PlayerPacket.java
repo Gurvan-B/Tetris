@@ -5,7 +5,6 @@ import main.Player;
 public class PlayerPacket extends Packet {
 
 	public static final int player = 4;
-//	public static final int updateRight = 5;
 	
 	private static final long serialVersionUID = 2732929164670973602L;
 	private Player p;

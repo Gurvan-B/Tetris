@@ -73,10 +73,15 @@ public class Mouse implements MouseMotionListener, MouseListener {
 //				w.x= -1;
 //				
 //				w.musique.play();
-				
-				w.playerIsReady = !w.playerIsReady;
-				w.client.sendToOther(new BooleanPacket(w.playerIsReady, BooleanPacket.isReadyBool ));
-//				w.processStartBothReady();
+				if (w.local) {
+					w.reset();
+					w.drawChrono = true;
+					w.countdown.play();
+				} else {
+					w.playerIsReady = !w.playerIsReady;
+					w.client.sendToOther(new BooleanPacket(w.playerIsReady, BooleanPacket.isReadyBool ));
+	//				w.processStartBothReady();
+				}
 				
 			}
 		}

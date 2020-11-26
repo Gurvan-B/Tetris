@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import client.Client;
 import display.AudioFile;
@@ -40,11 +41,23 @@ public class World {
 	public boolean 			drawChrono;
 	public boolean			showFps;
 	private TextureLoader	tl;
+	public	boolean			local;
+	private int				difficulty;
+	private AudioFile 		won;
+	private AudioFile 		lost;
+//	private AudioFile 		countdown;
+//	private AudioFile 		go;
+	public AudioFile 		countdown;
 	
 	public World() {
 		leftPlayer = new Player(true);
 		rightPlayer = new Player(false);
 		musique = new AudioFile("sound_effects/musique",true);
+		won = new AudioFile("sound_effects/won",false);
+		lost = new AudioFile("sound_effects/lost",false);
+//		countdown = new AudioFile("sound_effects/countdown",false);
+//		go = new AudioFile("sound_effects/go",false);
+		countdown = new AudioFile("sound_effects/countdown",false);
 		milliSecSinceYouWin = 0;
 		millisSecSinceChrono=0;
 		chrono = 4;
@@ -53,7 +66,7 @@ public class World {
 		bind = new Bindings(this);
 		playerIsReady = false;
 		playing = false;
-
+		difficulty = 3;
 		fond = loadImage("images/fond");
 		logo = loadImage("images/logo");
 		background = loadImage("images/background");
@@ -101,22 +114,65 @@ public class World {
 		x=-1;
 	}
 	
+	public void defineLocal() {
+		int answer = JOptionPane.showConfirmDialog(null, "Connect to a server ?","Play local/online", JOptionPane.YES_NO_OPTION);
+		switch (answer) {
+		case 0: {
+			local = false;
+			break;
+		}
+		case 1: {
+			local = true;
+			break;
+		}
+		case -1:{
+			System.exit(0);
+			break;
+		}
+		default:{
+			System.exit(0);
+		}
+		}
+	}
+	
+	public void setDifficulty() {
+		String[] difficulties = {"1","2","3","4","5","6","7","8","9"};
+		String difficultySt = (String) JOptionPane.showInputDialog(
+				null, "Choose a difficulty ?","Difficulty",
+				JOptionPane.WARNING_MESSAGE,null,
+				difficulties, difficulties[2] );
+		setDifficultyBothPlayers(Integer.parseInt(difficultySt));
+	}
+	
+	public void setDifficultyBothPlayers(int newDifficulty) {
+		difficulty = newDifficulty;
+		leftPlayer.setDifficulty(difficulty);
+		rightPlayer.setDifficulty(difficulty);
+	}
+	
+	public int getDifficulty() {
+		return difficulty;
+	}
+	
 	public void processChrono() {
 		if (drawChrono) {
-			if (millisSecSinceChrono+1000 >= System.currentTimeMillis()) {
-				} else {
-					millisSecSinceChrono = System.currentTimeMillis();
-					if(chrono != 0) {
-						chrono --;
-						if (chrono != 0) new AudioFile("sound_effects/countdown",false).play();
-						else new AudioFile("sound_effects/go",false).play();
-					} else {
-						startPlaying();
-						drawChrono = false;
-						chrono = 4;
-						musique.play();
+			if (millisSecSinceChrono+1000 <= System.currentTimeMillis()) {
+				if(chrono != 0) {
+					chrono --;
+					if (chrono != 0) {
+//						countdown.restart();
 					}
+					else{
+//						go.restart();
+					}
+				} else {
+					startPlaying();
+					drawChrono = false;
+					chrono = 4;
+					musique.play();
 				}
+			millisSecSinceChrono = System.currentTimeMillis();
+			}
 		}
 	}
 	
@@ -124,10 +180,18 @@ public class World {
 		if (drawChrono) {
 			String value = chrono +"";
 			if (chrono == 0) value = "GO";
-			int x=0;
-			if (!playingLeft) x = 1380;
-			drawBox(g, 270+x, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
-			drawText(g, 270+x, 100, value, Color.green);
+			if(local) {
+				drawBox(g, 270, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
+				drawText(g, 270, 100, value, Color.green);
+				
+				drawBox(g, 270+1380, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
+				drawText(g, 270+1380, 100, value, Color.green);
+			} else {
+				int x=0;
+				if (!playingLeft) x = 1380;
+				drawBox(g, 270+x, 100, 200, 100, 10, 10, Color.lightGray,Color.white);
+				drawText(g, 270+x, 100, value, Color.green);
+			}
 		}
 	}
 	
@@ -173,16 +237,21 @@ public class World {
 //		rightPlayer.start = false; TODO
 			
 //		getPlayingPlayer().justOver = false;
-		client.opponentJustOver = false;
+		
+		leftPlayer.localPlayerJustOver = false;
+		rightPlayer.localPlayerJustOver = false;
+		
 		playing = false;
 		playerIsReady = false;
-		client.stopSending();
+		if (!local) {
+			client.opponentJustOver = false;
+			client.stopSending();
+		}
 		
-		if (getPlayingPlayer().score <= getOpponent().score) {
-			AudioFile lost = new AudioFile("sound_effects/lost",false);
+		if ( (!local && (getPlayingPlayer().score <= getOpponent().score))) {
 			lost.play();
 		} else {
-			AudioFile won = new AudioFile("sound_effects/won",false);
+			System.out.println("win");
 			won.play();
 		}
 		
@@ -206,37 +275,37 @@ public class World {
 		switch (player.nextShape) {
 		case 0: { 
 			Shape_Class s = new T_Shape(Color.pink,true);	
-			s.drawForSideScreen(g, centerX, centerY+27);
+			s.drawForSideScreen(g, centerX, centerY+27,tl);
 			break;
 		}
 		case 1: {
 			Shape_Class s = new I_Shape(Color.cyan,true);	
-			s.drawForSideScreen(g, centerX, centerY+27);
+			s.drawForSideScreen(g, centerX, centerY+27,tl);
 			break;
 		}
 		case 2: {
 			Shape_Class s = new J_Shape(Color.blue,true);	
-			s.drawForSideScreen(g, centerX+27, centerY);
+			s.drawForSideScreen(g, centerX+27, centerY,tl);
 			break;
 		}
 		case 3: {
 			Shape_Class s = new L_Shape(Color.orange,true);	
-			s.drawForSideScreen(g, centerX-27, centerY);
+			s.drawForSideScreen(g, centerX-27, centerY,tl);
 			break;
 		}
 		case 4: {
 			Shape_Class s = new O_Shape(Color.yellow,true);	
-			s.drawForSideScreen(g, centerX+27, centerY+27);
+			s.drawForSideScreen(g, centerX+27, centerY+27,tl);
 			break;
 		}
 		case 5: {
 			Shape_Class s = new Z_Shape(Color.red,true);	
-			s.drawForSideScreen(g, centerX, centerY-27);
+			s.drawForSideScreen(g, centerX, centerY-27,tl);
 			break;
 		}
 		case 6: {
 			Shape_Class s = new S_Shape(Color.green,true);	
-			s.drawForSideScreen(g, centerX, centerY-27);
+			s.drawForSideScreen(g, centerX, centerY-27,tl);
 			break;
 		}
 		}
