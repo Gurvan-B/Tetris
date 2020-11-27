@@ -249,10 +249,10 @@ public class World {
 		}
 		
 		if ( (!local && (getPlayingPlayer().score <= getOpponent().score))) {
-			lost.play();
+			lost.restart();
 		} else {
 			System.out.println("win");
-			won.play();
+			won.restart();
 		}
 		
 	}

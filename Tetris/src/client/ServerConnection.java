@@ -62,7 +62,7 @@ public class ServerConnection implements Runnable{
 						if (request) {
 							client.w.reset();
 							client.w.drawChrono = true;
-							client.w.countdown.play();
+							client.w.countdown.restart();
 							client.startSending();
 						}
 					}

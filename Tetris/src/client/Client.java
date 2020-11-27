@@ -156,8 +156,8 @@ public class Client implements Runnable{
 		}
 		try {
 			System.out.println("connexion auto à supprimer");
-			ip = "192.168.137.1";
-			port = 6585;
+//			ip = "192.168.137.1";
+//			port = 6585;
 			s = new Socket(ip,port);
 			out = new ObjectOutputStream(s.getOutputStream());
 			return true;

@@ -68,6 +68,7 @@ public class AudioFile {
 	
 	public void restart() {
 		clip.setFramePosition(0);
+//		clip.stop();
 		clip.start();
 		if (loop)
 			clip.loop(Clip.LOOP_CONTINUOUSLY);

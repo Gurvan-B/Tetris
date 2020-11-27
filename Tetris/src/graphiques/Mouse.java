@@ -76,7 +76,7 @@ public class Mouse implements MouseMotionListener, MouseListener {
 				if (w.local) {
 					w.reset();
 					w.drawChrono = true;
-					w.countdown.play();
+					w.countdown.restart();
 				} else {
 					w.playerIsReady = !w.playerIsReady;
 					w.client.sendToOther(new BooleanPacket(w.playerIsReady, BooleanPacket.isReadyBool ));
