@@ -88,7 +88,7 @@ public class ServerConnection implements Runnable{
 			}
 			
 		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace(); // A retirer plus tard
+			e.printStackTrace(); // A retirer plus tard TODO
 			client.displayMessageLog("Connection lost",true);
 			JOptionPane.showMessageDialog(null, "Connection lost","Connection error",JOptionPane.WARNING_MESSAGE);
 		}

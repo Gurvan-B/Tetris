@@ -48,7 +48,7 @@ public class Client implements Runnable{
 	@Override
 	public void run() {
 		
-		try {
+//		try {
 			displayMessageLog("Starting to send",true);
 			
 
@@ -67,12 +67,12 @@ public class Client implements Runnable{
 			
 		
 		displayMessageLog("Stopped to send",true);
-		} 
+//		} 
 //		catch (IOException e) {
 //			e.printStackTrace();
 //			displayMessageLog("Server Closed",true);
 //		}
-		finally {
+//		finally {
 //			displayMessageLog("disconnecting", true);
 //			disconnect();
 			try {
@@ -80,7 +80,7 @@ public class Client implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+//		}
 		
 	}
 	
@@ -156,13 +156,13 @@ public class Client implements Runnable{
 		}
 		try {
 			System.out.println("connexion auto à supprimer");
-//			ip = "192.168.137.1";
-//			port = 6585;
+			ip = "192.168.137.1";
+			port = 6585;
 			s = new Socket(ip,port);
 			out = new ObjectOutputStream(s.getOutputStream());
 			return true;
 		} catch (IOException e) {
-//			e.printStackTrace();
+			e.printStackTrace(); // TODO RETIRER
 			displayMessageLog("Unable to connect to " + ip + ":" + port,true);
 			JOptionPane.showMessageDialog(null, "Unable to connect to " + ip + ":" + port,"Connection error",JOptionPane.WARNING_MESSAGE);
 			return false;

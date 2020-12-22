@@ -53,7 +53,7 @@ public class ClientHandler implements Runnable{
 				
 			}
 			} catch (IOException e) {
-//				e.printStackTrace(); // TODO Retirer l'affichage de l'erreur
+				e.printStackTrace(); // TODO Retirer l'affichage de l'erreur
 				
 				if (isLeft) {
 					server.displayMessageLog("Left player disconnected",true);
