@@ -12,12 +12,10 @@ public class MyFrame extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.setUndecorated(true);
-//		this.setUndecorated(false);
 		this.add(affichage);
 		affichage.setFocusable(false);
 		this.addKeyListener(affichage.w.bind);
 		this.addMouseListener(affichage.w.mouse);
 		this.addMouseMotionListener(affichage.w.mouse);
-		this.setVisible(true);
 	}
 }
