@@ -122,23 +122,23 @@ public class Bindings implements KeyListener {
 	
 		public void initKeys() {
 			
-			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 100);
-			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 100);
+			keys[KeyEvent.VK_Q] = new Key(KeyEvent.VK_Q, 70);
+			keys[KeyEvent.VK_D] = new Key(KeyEvent.VK_D, 70);
 			keys[KeyEvent.VK_SHIFT] = new Key(KeyEvent.VK_SHIFT, 0);
-			keys[KeyEvent.VK_S] = new Key(KeyEvent.VK_S, 170);
-			keys[KeyEvent.VK_Z] = new Key(KeyEvent.VK_Z, 170);
-			keys[KeyEvent.VK_SPACE] = new Key(KeyEvent.VK_SPACE, 300);
+			keys[KeyEvent.VK_S] = new Key(KeyEvent.VK_S, 150);
+			keys[KeyEvent.VK_Z] = new Key(KeyEvent.VK_Z, 150);
+			keys[KeyEvent.VK_SPACE] = new Key(KeyEvent.VK_SPACE, 150);
 			
-			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 100);
-			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 100);
+			keys[KeyEvent.VK_LEFT] = new Key(KeyEvent.VK_LEFT, 70);
+			keys[KeyEvent.VK_RIGHT] = new Key(KeyEvent.VK_RIGHT, 70);
 			keys[KeyEvent.VK_INSERT] = new Key(KeyEvent.VK_INSERT, 0);
-			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 170);
-			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 170);
-			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 300);
+			keys[KeyEvent.VK_DOWN] = new Key(KeyEvent.VK_DOWN, 150);
+			keys[KeyEvent.VK_UP] = new Key(KeyEvent.VK_UP, 150);
+			keys[KeyEvent.VK_ENTER] = new Key(KeyEvent.VK_ENTER, 150);
 			
-			keys[KeyEvent.VK_P] = new Key(KeyEvent.VK_P, 500);
+			keys[KeyEvent.VK_P] = new Key(KeyEvent.VK_P, 250);
 			keys[KeyEvent.VK_ESCAPE] = new Key(KeyEvent.VK_ESCAPE,0);
-			keys[KeyEvent.VK_F] = new Key(KeyEvent.VK_F,300);
+			keys[KeyEvent.VK_F] = new Key(KeyEvent.VK_F,150);
 		}
 		
 	
